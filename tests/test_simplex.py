@@ -33,6 +33,17 @@ class TestSimplex:
 
         assert np.array_equal(simplex.A, expected_a)
 
+    def test_adding_slack_sets_the_basis_size(self):
+        """Should set the basis based on the number of variables."""
+        simplex = Simplex()
+        A = np.array([[1,  1],
+                      [1, -1]])
+        simplex.A = A
+
+        simplex.add_slack()
+
+        assert simplex.basis_size == 2
+
     def test_can_make_tableau_from_constraints(self):
         # A = np.array([[]])
         assert False # Finish me.
