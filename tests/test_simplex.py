@@ -9,12 +9,12 @@ class TestSimplex:
         """Checks that the slack variables can be added correctly."""
         simplex = Simplex()
         coefficients = np.array([[1,  1],
-                      [1, -1]])
+                                 [1, -1]])
         simplex.coefficients = coefficients
         expected_coefficients = np.array([[1,  1, 1, 0],
                                [1, -1, 0, 1]])
 
-        simplex.add_slack()
+        simplex.initialize_slack()
 
         assert np.array_equal(simplex.coefficients, expected_coefficients)
 
@@ -22,25 +22,25 @@ class TestSimplex:
         """Checks that the slack variables can be added for larger matrices."""
         simplex = Simplex()
         coefficients = np.array([[1,  1, 1],
-                      [1, -1, 2],
-                      [2,  1, 1]])
+                                 [1, -1, 2],
+                                 [2,  1, 1]])
         simplex.coefficients = coefficients
         expected_a = np.array([[1,  1, 1, 1, 0, 0],
                                [1, -1, 2, 0, 1, 0],
                                [2,  1, 1, 0, 0, 1]])
 
-        simplex.add_slack()
+        simplex.initialize_slack()
 
         assert np.array_equal(simplex.coefficients, expected_a)
 
-    def test_adding_slack_sets_the_basis_size(self):
+    def test_initializing_basis_sets_the_basis_size(self):
         """Should set the basis based on the number of variables."""
         simplex = Simplex()
         coefficients = np.array([[1,  1],
-                      [1, -1]])
+                                 [1, -1]])
         simplex.coefficients = coefficients
 
-        simplex.add_slack()
+        simplex.initialize_basis()
 
         assert simplex.basis_size == 2
 
