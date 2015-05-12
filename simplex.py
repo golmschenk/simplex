@@ -10,7 +10,6 @@ class Simplex:
     def __init__(self):
         self.coefficients = np.array([[]])
         self.constraints = np.array([[]])
-        self.basis_size = 0
         self.basis_coefficients = np.array([[]])
         self.basis_solution = np.array([[]])
         self.basis_value = 0
@@ -26,5 +25,4 @@ class Simplex:
 
     def initialize_basis(self):
         """Sets up the initial basis."""
-        basis_size = self.coefficients.shape[0]
-        self.basis_size = basis_size
+        self.basis_solution = self.constraints
