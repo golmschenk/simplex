@@ -47,6 +47,20 @@ class TestSimplex:
 
         assert np.array_equal(simplex.basis_solution, expected_basis_solution)
 
+    def test_initializing_basis_creates_a_basis_solution_of_zeros_of_the_right_size(self):
+        simplex = Simplex()
+        simplex.constraints = np.array([[4],
+                                        [2]])
+        simplex.initialize_basis()
+        assert np.array_equal(simplex.basis_coefficients, np.array([[0], [0]]))
+
+        simplex = Simplex()
+        simplex.constraints = np.array([[4],
+                                        [2],
+                                        [1]])
+        simplex.initialize_basis()
+        assert np.array_equal(simplex.basis_coefficients, np.array([[0], [0], [0]]))
+
     def test_can_make_tableau_from_constraints(self):
         # coefficients = np.array([[]])
         assert False # Finish me.

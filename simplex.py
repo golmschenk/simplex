@@ -26,3 +26,4 @@ class Simplex:
     def initialize_basis(self):
         """Sets up the initial basis."""
         self.basis_solution = self.constraints
+        self.basis_coefficients = np.zeros(self.constraints.shape)
