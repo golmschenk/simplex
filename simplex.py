@@ -87,5 +87,7 @@ class Simplex:
         """Multiply the pivot row to make the pivot element equal 1."""
         multiplier = 1.0 / self.coefficients[self.pivot_row_index][self.pivot_column_index]
         self.coefficients[self.pivot_row_index] *= multiplier
+        self.basis_solution[self.pivot_row_index] *= multiplier
+        self.basis_objective[self.pivot_row_index] *= multiplier
 
 

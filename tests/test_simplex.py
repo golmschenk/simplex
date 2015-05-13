@@ -183,6 +183,8 @@ class TestSimplex:
         simplex = Simplex()
         simplex.pivot_column_index = 2
         simplex.pivot_row_index = 1
+        simplex.basis_objective = np.array([[1], [1], [1]], dtype='float')
+        simplex.basis_solution = np.array([[2], [3], [4]], dtype='float')
         simplex.coefficients = np.array([[1, 2, -4],
                                          [2, 1,  3],
                                          [2, 1,  1]], dtype='float')
@@ -194,3 +196,32 @@ class TestSimplex:
                                           [2, 1,  1]], dtype='float')
         assert np.array_equal(simplex.coefficients, expected_coefficients)
 
+    def test_making_pivot_element_one_multiplies_the_basis_solution_row(self):
+        simplex = Simplex()
+        simplex.pivot_column_index = 2
+        simplex.pivot_row_index = 1
+        simplex.basis_objective = np.array([[1], [1], [1]], dtype='float')
+        simplex.basis_solution = np.array([[2], [3], [4]], dtype='float')
+        simplex.coefficients = np.array([[1, 2, -4],
+                                         [2, 1,  3],
+                                         [2, 1,  1]], dtype='float')
+
+        simplex.make_pivot_element_one()
+
+        expected_basis_solution = np.array([[2], [1], [4]], dtype='float')
+        assert np.array_equal(simplex.basis_solution, expected_basis_solution)
+
+    def test_making_pivot_element_one_multiplies_the_basis_objective_row(self):
+        simplex = Simplex()
+        simplex.pivot_column_index = 2
+        simplex.pivot_row_index = 1
+        simplex.basis_objective = np.array([[1], [1], [1]], dtype='float')
+        simplex.basis_solution = np.array([[2], [3], [4]], dtype='float')
+        simplex.coefficients = np.array([[1, 2, -4],
+                                         [2, 1,  3],
+                                         [2, 1,  1]], dtype='float')
+
+        simplex.make_pivot_element_one()
+
+        expected_basis_objective = np.array([[1], [1/3.0], [1]], dtype='float')
+        assert np.array_equal(simplex.basis_objective, expected_basis_objective)
