@@ -90,4 +90,11 @@ class Simplex:
         self.basis_solution[self.pivot_row_index] *= multiplier
         self.basis_objective[self.pivot_row_index] *= multiplier
 
+    def make_pivot_independent(self):
+        for row_index in range(self.coefficients.shape[0]):
+            if row_index != self.pivot_row_index:
+                row_multiplier = self.coefficients[row_index][self.pivot_column_index]
+                self.coefficients[row_index] -= row_multiplier * self.coefficients[self.pivot_row_index]
+                self.basis_solution[row_index] -= row_multiplier * self.basis_solution[self.pivot_row_index]
+
 

@@ -13,7 +13,7 @@ class TestSimplex:
                                  [1, -1]])
         simplex.coefficients = coefficients
         expected_coefficients = np.array([[1,  1, 1, 0],
-                               [1, -1, 0, 1]])
+                                          [1, -1, 0, 1]])
 
         simplex.initialize_slack()
 
@@ -225,3 +225,37 @@ class TestSimplex:
 
         expected_basis_objective = np.array([[1], [1/3.0], [1]], dtype='float')
         assert np.array_equal(simplex.basis_objective, expected_basis_objective)
+
+    def test_row_independence_subtracts_coefficient_rows(self):
+        simplex = Simplex()
+        simplex.pivot_column_index = 0
+        simplex.pivot_row_index = 1
+        simplex.coefficients = np.array([[1,  1, 1, 0],
+                                         [1, -1, 0, 1]], dtype='float')
+        simplex.basis_solution = np.array([[4],
+                                           [2]], dtype='float')
+        simplex.basis_objective = np.array([[0],
+                                            [0]], dtype='float')
+
+        simplex.make_pivot_independent()
+
+        expected_coefficients = np.array([[0,  2, 1, -1],
+                                          [1, -1, 0,  1]], dtype='float')
+        assert np.array_equal(simplex.coefficients, expected_coefficients)
+
+    def test_row_independence_subtracts_basis_solution_rows(self):
+        simplex = Simplex()
+        simplex.pivot_column_index = 0
+        simplex.pivot_row_index = 1
+        simplex.coefficients = np.array([[1,  1, 1, 0],
+                                         [1, -1, 0, 1]], dtype='float')
+        simplex.basis_solution = np.array([[4],
+                                           [2]], dtype='float')
+        simplex.basis_objective = np.array([[0],
+                                            [0]], dtype='float')
+
+        simplex.make_pivot_independent()
+
+        expected_basis_solution = np.array([[2],
+                                            [2]], dtype='float')
+        assert np.array_equal(simplex.basis_solution, expected_basis_solution)
