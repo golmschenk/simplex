@@ -8,9 +8,12 @@ from variable import Variable
 
 class Simplex:
     """Class to preform simplex."""
-    def __init__(self):
-        self.coefficients = np.array([[]], dtype='float')
-        self.constraints = np.array([[]], dtype='float')
+    def __init__(self,
+                 coefficients=np.array([[]], dtype='float'),
+                 constraints=np.array([[]], dtype='float'),
+                 objective=np.array([], dtype='float')):
+        self.coefficients = coefficients
+        self.constraints = constraints
         self.basis_objective = np.array([[]], dtype='float')
         self.basis_solution = np.array([[]], dtype='float')
         self.basis_value = 0
@@ -19,7 +22,7 @@ class Simplex:
         self.reduced_costs = np.array([[]], dtype='float')
         self.least_positive_ratio = np.array([[]], dtype='float')
         self.basis_variables = []
-        self.objective = np.array([[]], dtype='float')
+        self.objective = objective
         self.basis_size = 0
         self.pivot_column_index = None
         self.pivot_row_index = None

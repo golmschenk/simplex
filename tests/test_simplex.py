@@ -278,3 +278,13 @@ class TestSimplex:
         assert np.array_equal(simplex.basis_objective, expected_basis_objective)
         assert simplex.basis_variables == expected_basis_variables
 
+    def test_can_initialize_on_creation(self):
+        coefficients = np.array([[5]], dtype='float')
+        constraints = np.array([[4]], dtype='float')
+        objective = np.array([3], dtype='float')
+
+        simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
+
+        assert np.array_equal(simplex.coefficients, coefficients)
+        assert np.array_equal(simplex.constraints, constraints)
+        assert np.array_equal(simplex.objective, objective)
