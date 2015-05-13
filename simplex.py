@@ -66,6 +66,7 @@ class Simplex:
         """Checks if the solution is unbounded."""
         for index, reduced_cost in enumerate(self.reduced_costs):
             if reduced_cost < 0:
-                if all(self.coefficients.T[index] <= 0):
+                column = self.coefficients.T[index]
+                if all(value <= 0 for value in column):
                     return True
         return False
