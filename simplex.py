@@ -33,3 +33,7 @@ class Simplex:
         self.basis_variables = []
         for index in range(self.constraints.shape[0]):
             self.basis_variables.append(Variable(index=index, is_slack=True))
+
+    def calculate_basis_value(self):
+        self.basis_value = np.sum(np.inner(self.basis_objective.T, self.basis_solution.T))
+

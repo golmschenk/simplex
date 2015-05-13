@@ -74,7 +74,14 @@ class TestSimplex:
 
     def test_calculation_of_basis_value(self):
         simplex = Simplex()
-        simplex.basis_objective
+        simplex.basis_objective = np.array([[1],
+                                            [2]])
+        simplex.basis_solution = np.array([[4],
+                                           [2]])
+
+        simplex.calculate_basis_value()
+
+        assert simplex.basis_value == 8
 
     def test_can_make_tableau_from_constraints(self):
         # coefficients = np.array([[]])
