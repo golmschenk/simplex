@@ -70,3 +70,8 @@ class Simplex:
                 if all(value <= 0 for value in column):
                     return True
         return False
+
+    def attain_pivot_column_index(self):
+        """Return the column on which to pivot."""
+        return np.argmin(self.reduced_costs)
+

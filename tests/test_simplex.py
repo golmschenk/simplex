@@ -159,3 +159,11 @@ class TestSimplex:
         is_unbounded = simplex.check_if_unbounded()
         assert is_unbounded
 
+    def test_pivot_column_attaining(self):
+        simplex = Simplex()
+        simplex.reduced_costs = np.array([3, -2, -1])
+
+        pivot_column = simplex.attain_pivot_column_index()
+
+        assert pivot_column == 1
+
