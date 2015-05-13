@@ -1,7 +1,6 @@
 """Functional tests for the simplex module."""
 import numpy as np
 from simplex import Simplex
-from variable import Variable
 
 
 class TestFunctionalSimplex:
