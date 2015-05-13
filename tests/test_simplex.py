@@ -132,3 +132,15 @@ class TestSimplex:
 
         expected_reduced_costs = np.array([-3, -2, 0, 0])
         assert np.array_equal(simplex.reduced_costs, expected_reduced_costs)
+
+    def test_checking_for_optimality(self):
+        simplex = Simplex()
+        simplex.reduced_costs = np.array([3, 0, 2])
+        is_optimal = simplex.check_if_optimal()
+        assert is_optimal
+
+        simplex = Simplex()
+        simplex.reduced_costs = np.array([3, 0, -1])
+        is_optimal = simplex.check_if_optimal()
+        assert not is_optimal
+

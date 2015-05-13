@@ -55,4 +55,10 @@ class Simplex:
             temporary_reduced_costs = np.append(temporary_reduced_costs, product - self.objective[index])
         self.reduced_costs = temporary_reduced_costs
 
+    def check_if_optimal(self):
+        for reduced_cost in self.reduced_costs:
+            if reduced_cost < 0:
+                return False
+        return True
+
 
