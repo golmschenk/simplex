@@ -21,6 +21,8 @@ class Simplex:
         self.basis_variables = []
         self.objective = np.array([[]])
         self.basis_size = 0
+        self.pivot_column_index = None
+        self.pivot_row_index = None
 
     def initialize_slack(self):
         """Adds the slack identity matrix to the A matrix."""
@@ -71,7 +73,13 @@ class Simplex:
                     return True
         return False
 
-    def attain_pivot_column_index(self):
+    def obtain_pivot_column_index(self):
         """Return the column on which to pivot."""
-        return np.argmin(self.reduced_costs)
+        self.pivot_column_index =  np.argmin(self.reduced_costs)
+
+    def obtain_pivot_row_index(self):
+        """Return the row on which to pivot."""
+        pivot_column = self.coefficients.T[self.pivot_column_index]
+        self.least_positive_ratio = np.divide(self.basis_solution.flatten(), pivot_column)
+        self.pivot_row_index = min([ratio for ratio in self.least_positive_ratio if ratio > 0])
 

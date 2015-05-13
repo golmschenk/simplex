@@ -163,7 +163,18 @@ class TestSimplex:
         simplex = Simplex()
         simplex.reduced_costs = np.array([3, -2, -1])
 
-        pivot_column = simplex.attain_pivot_column_index()
+        simplex.obtain_pivot_column_index()
 
-        assert pivot_column == 1
+        assert simplex.pivot_column_index == 1
 
+    def test_pivot_row_attaining(self):
+        simplex = Simplex()
+        simplex.pivot_column_index = 1
+        simplex.coefficients = np.array([[1, 2, -1],
+                                         [2, 1,  1],
+                                         [2, 1,  1]])
+        simplex.basis_solution = np.array([[-5], [1], [2]])
+
+        simplex.obtain_pivot_row_index()
+
+        assert simplex.pivot_row_index == 1
