@@ -26,6 +26,8 @@ class Simplex:
         self.basis_size = 0
         self.pivot_column_index = None
         self.pivot_row_index = None
+        self.is_optimal = False
+        self.is_unbounded = False
 
     def initialize_slack(self):
         """Adds the slack identity matrix to the A matrix."""
@@ -65,6 +67,7 @@ class Simplex:
         for reduced_cost in self.reduced_costs:
             if reduced_cost < 0:
                 return False
+        self.is_optimal = True
         return True
 
     def check_if_unbounded(self):
@@ -73,6 +76,7 @@ class Simplex:
             if reduced_cost < 0:
                 column = self.coefficients.T[index]
                 if all(value <= 0 for value in column):
+                    self.is_unbounded = True
                     return True
         return False
 
@@ -84,7 +88,7 @@ class Simplex:
         """Return the row on which to pivot."""
         pivot_column = self.coefficients.T[self.pivot_column_index]
         self.least_positive_ratio = np.divide(self.basis_solution.flatten(), pivot_column)
-        self.pivot_row_index = min([ratio for ratio in self.least_positive_ratio if ratio > 0])
+        self.pivot_row_index = np.argmin([ratio if ratio > 0 else float('inf') for ratio in self.least_positive_ratio])
 
     def make_pivot_element_one(self):
         """Multiply the pivot row to make the pivot element equal 1."""
@@ -122,6 +126,28 @@ class Simplex:
 
     def run(self):
         """Run complete simplex."""
-        pass
+        # Set up the tableau.
+        self.initialize_tableau()
+        while True:
+            # Calculate the value and reduced costs.
+            self.calculate_basis_value()
+            self.calculate_reduced_costs()
+            # End if the solution is optimal or unbounded.
+            if self.check_if_optimal():
+                self.value = self.basis_value
+                self.obtain_solution()
+                return
+            if self.check_if_unbounded():
+                self.value = float('inf')
+                return
+            # Determine the pivot.
+            self.obtain_pivot_column_index()
+            self.obtain_pivot_row_index()
+            # Perform pivot.
+            self.make_pivot_element_one()
+            self.make_pivot_independent()
+            self.swap_basis_variable()
+
+
 
 

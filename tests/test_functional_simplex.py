@@ -16,5 +16,6 @@ class TestFunctionalSimplex:
 
         simplex.run()
 
+        assert simplex.is_optimal
         assert simplex.value == 11
-        assert np.array_equal(simplex.solution, np.array([3, 1]))
+        assert np.array_equal(simplex.solution, np.array([[3], [1]]))
