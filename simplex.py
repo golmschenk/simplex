@@ -83,3 +83,9 @@ class Simplex:
         self.least_positive_ratio = np.divide(self.basis_solution.flatten(), pivot_column)
         self.pivot_row_index = min([ratio for ratio in self.least_positive_ratio if ratio > 0])
 
+    def make_pivot_element_one(self):
+        """Multiply the pivot row to make the pivot element equal 1."""
+        multiplier = 1.0 / self.coefficients[self.pivot_row_index][self.pivot_column_index]
+        self.coefficients[self.pivot_row_index] *= multiplier
+
+

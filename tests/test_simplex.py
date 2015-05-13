@@ -178,3 +178,19 @@ class TestSimplex:
         simplex.obtain_pivot_row_index()
 
         assert simplex.pivot_row_index == 1
+
+    def test_making_pivot_element_one_multiplies_the_coefficient_row(self):
+        simplex = Simplex()
+        simplex.pivot_column_index = 2
+        simplex.pivot_row_index = 1
+        simplex.coefficients = np.array([[1, 2, -4],
+                                         [2, 1,  3],
+                                         [2, 1,  1]], dtype='float')
+
+        simplex.make_pivot_element_one()
+
+        expected_coefficients = np.array([[1, 2, -4],
+                                          [2.0/3, 1.0/3,  1],
+                                          [2, 1,  1]], dtype='float')
+        assert np.array_equal(simplex.coefficients, expected_coefficients)
+
