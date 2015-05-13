@@ -113,4 +113,15 @@ class Simplex:
             variable.number = self.pivot_column_index
         self.basis_variables[self.pivot_row_index] = variable
 
+    def obtain_solution(self):
+        """Extracts the solution given the basis variables and basis solution."""
+        self.solution = np.zeros((self.coefficients.shape[1] / 2, 1), dtype='float')
+        for index, variable in enumerate(self.basis_variables):
+            if not variable.is_slack:
+                self.solution[variable.number] = self.basis_solution[index]
+
+    def run(self):
+        """Run complete simplex."""
+        pass
+
 

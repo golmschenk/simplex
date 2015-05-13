@@ -288,3 +288,14 @@ class TestSimplex:
         assert np.array_equal(simplex.coefficients, coefficients)
         assert np.array_equal(simplex.constraints, constraints)
         assert np.array_equal(simplex.objective, objective)
+
+    def test_extract_solution(self):
+        simplex = Simplex()
+        simplex.coefficients = np.array([[1,  1, 1, 0],
+                                         [1, -1, 0, 1]], dtype='float')
+        simplex.basis_variables = [Variable(index=0, is_slack=True), Variable(index=1, is_slack=False)]
+        simplex.basis_solution = np.array([[9], [4]], dtype='float')
+
+        simplex.obtain_solution()
+
+        assert np.array_equal(simplex.solution, np.array([[0], [4]], dtype='float'))
