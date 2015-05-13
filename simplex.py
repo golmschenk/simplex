@@ -56,9 +56,16 @@ class Simplex:
         self.reduced_costs = temporary_reduced_costs
 
     def check_if_optimal(self):
+        """Checks if the solution is optimal."""
         for reduced_cost in self.reduced_costs:
             if reduced_cost < 0:
                 return False
         return True
 
-
+    def check_if_unbounded(self):
+        """Checks if the solution is unbounded."""
+        for index, reduced_cost in enumerate(self.reduced_costs):
+            if reduced_cost < 0:
+                if all(self.coefficients.T[index] <= 0):
+                    return True
+        return False

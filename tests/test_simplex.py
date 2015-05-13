@@ -144,3 +144,18 @@ class TestSimplex:
         is_optimal = simplex.check_if_optimal()
         assert not is_optimal
 
+    def test_checking_for_unboundedness(self):
+        simplex = Simplex()
+        simplex.reduced_costs = np.array([3, 0, -1])
+        simplex.coefficients = np.array([[1, 2, -1],
+                                         [2, 1,  1]])
+        is_unbounded = simplex.check_if_unbounded()
+        assert not is_unbounded
+
+        simplex = Simplex()
+        simplex.reduced_costs = np.array([3, 0, -1])
+        simplex.coefficients = np.array([[1, 2, -1],
+                                         [2, 1,  0]])
+        is_unbounded = simplex.check_if_unbounded()
+        assert is_unbounded
+
