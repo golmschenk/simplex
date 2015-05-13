@@ -34,6 +34,19 @@ class TestSimplex:
 
         assert np.array_equal(simplex.coefficients, expected_a)
 
+    def test_adding_slack_extends_objective_with_zeros(self):
+        """Checks that the slack variables can be added for larger matrices."""
+        simplex = Simplex()
+        coefficients = np.array([[1,  1],
+                                 [1, -1]])
+        simplex.coefficients = coefficients
+        simplex.objective = np.array([-3, -2])
+        expected_objective = np.array([-3, -2, 0, 0])
+
+        simplex.initialize_slack()
+
+        assert np.array_equal(simplex.objective, expected_objective)
+
     def test_initializing_basis_sets_the_basis_initial_solution_to_the_initial_constraints(self):
         """Should set the basis based on the number of variables."""
         simplex = Simplex()
@@ -103,3 +116,19 @@ class TestSimplex:
         assert simplex.basis_variables == expected_basis_variables
         np.array_equal(simplex.basis_objective, expected_basis_objective)
         np.array_equal(simplex.basis_solution, expected_basis_solution)
+
+    def test_calculate_reduced_costs(self):
+        simplex = Simplex()
+        simplex.basis_size = 2
+        simplex.coefficients = np.array([[1,  1, 1, 0],
+                                         [1, -1, 0, 1]])
+        simplex.basis_objective = np.array([[0],
+                                            [0]])
+        simplex.basis_solution = np.array([[4],
+                                           [2]])
+        simplex.objective = np.array([3, 2, 0, 0])
+
+        simplex.calculate_reduced_costs()
+
+        expected_reduced_costs = np.array([-3, -2, 0, 0])
+        assert np.array_equal(simplex.reduced_costs, expected_reduced_costs)
