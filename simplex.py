@@ -16,9 +16,10 @@ class Simplex:
         self.basis_value = 0
         self.value = 0
         self.solution = np.array([[]])
-        self.reduced_cost = np.array([[]])
+        self.reduced_costs = np.array([[]])
         self.least_positive_ratio = np.array([[]])
         self.basis_variables = []
+        self.objective = np.array([[]])
 
     def initialize_slack(self):
         """Adds the slack identity matrix to the A matrix."""
@@ -34,6 +35,13 @@ class Simplex:
         for index in range(self.constraints.shape[0]):
             self.basis_variables.append(Variable(index=index, is_slack=True))
 
+    def initialize_tableau(self):
+        self.initialize_slack()
+        self.initialize_basis()
+
     def calculate_basis_value(self):
         self.basis_value = np.sum(np.inner(self.basis_objective.T, self.basis_solution.T))
+
+    def calculate_reduced_costs(self):
+        pass
 

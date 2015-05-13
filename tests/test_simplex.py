@@ -83,6 +83,23 @@ class TestSimplex:
 
         assert simplex.basis_value == 8
 
-    def test_can_make_tableau_from_constraints(self):
-        # coefficients = np.array([[]])
-        assert False # Finish me.
+    def test_can_make_tableau_from_constraints_coefficients_and_objective(self):
+        simplex = Simplex()
+        simplex.coefficients = np.array([[1,  1],
+                                         [1, -1]])
+        simplex.constraints = np.array([[4],
+                                        [2]])
+
+        simplex.initialize_tableau()
+
+        expected_coefficients = np.array([[1,  1, 1, 0],
+                                          [1, -1, 0, 1]])
+        expected_basis_variables = [Variable(index=0, is_slack=True), Variable(index=1, is_slack=True)]
+        expected_basis_objective = np.array([[0],
+                                             [0]])
+        expected_basis_solution = np.array([[4],
+                                            [2]])
+        np.array_equal(simplex.coefficients, expected_coefficients)
+        assert simplex.basis_variables == expected_basis_variables
+        np.array_equal(simplex.basis_objective, expected_basis_objective)
+        np.array_equal(simplex.basis_solution, expected_basis_solution)
