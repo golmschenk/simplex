@@ -11,7 +11,7 @@ class Simplex:
     def __init__(self):
         self.coefficients = np.array([[]])
         self.constraints = np.array([[]])
-        self.basis_coefficients = np.array([[]])
+        self.basis_objective = np.array([[]])
         self.basis_solution = np.array([[]])
         self.basis_value = 0
         self.value = 0
@@ -28,7 +28,7 @@ class Simplex:
     def initialize_basis(self):
         """Sets up the initial basis."""
         self.basis_solution = self.constraints
-        self.basis_coefficients = np.zeros(self.constraints.shape)
+        self.basis_objective = np.zeros(self.constraints.shape)
         self.basis_value = 0
         self.basis_variables = []
         for index in range(self.constraints.shape[0]):
