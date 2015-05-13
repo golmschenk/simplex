@@ -259,3 +259,22 @@ class TestSimplex:
         expected_basis_solution = np.array([[2],
                                             [2]], dtype='float')
         assert np.array_equal(simplex.basis_solution, expected_basis_solution)
+
+    def test_swap_basis_variables(self):
+        simplex = Simplex()
+        simplex.basis_size = 2
+        simplex.basis_variables = [Variable(index=0, is_slack=True), Variable(index=1, is_slack=True)]
+        simplex.objective = np.array([3, 2, 0, 0], dtype='float')
+        simplex.basis_objective = np.array([[0],
+                                            [0]], dtype='float')
+        simplex.pivot_row_index = 1
+        simplex.pivot_column_index = 0
+
+        simplex.swap_basis_variable()
+
+        expected_basis_objective = np.array([[0],
+                                             [3]], dtype='float')
+        expected_basis_variables = [Variable(index=0, is_slack=True), Variable(index=0, is_slack=False)]
+        assert np.array_equal(simplex.basis_objective, expected_basis_objective)
+        assert simplex.basis_variables == expected_basis_variables
+

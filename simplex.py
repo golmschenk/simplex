@@ -91,10 +91,23 @@ class Simplex:
         self.basis_objective[self.pivot_row_index] *= multiplier
 
     def make_pivot_independent(self):
+        """Preforms the row operations to make the pivot row independent."""
         for row_index in range(self.coefficients.shape[0]):
             if row_index != self.pivot_row_index:
                 row_multiplier = self.coefficients[row_index][self.pivot_column_index]
                 self.coefficients[row_index] -= row_multiplier * self.coefficients[self.pivot_row_index]
                 self.basis_solution[row_index] -= row_multiplier * self.basis_solution[self.pivot_row_index]
+
+    def swap_basis_variable(self):
+        """Moves a new variable into the basis."""
+        self.basis_objective[self.pivot_row_index][0] = self.objective[self.pivot_column_index]
+        variable = Variable()
+        if self.pivot_column_index >= self.basis_size:
+            variable.is_slack = True
+            variable.number = self.pivot_column_index - self.basis_size
+        else:
+            variable.is_slack = False
+            variable.number = self.pivot_column_index
+        self.basis_variables[self.pivot_row_index] = variable
 
 
