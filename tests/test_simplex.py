@@ -1,6 +1,7 @@
 """Tests for the simplex module."""
 import numpy as np
 from simplex import Simplex
+from variable import Variable
 
 
 class TestSimplex:
@@ -60,6 +61,16 @@ class TestSimplex:
                                         [1]])
         simplex.initialize_basis()
         assert np.array_equal(simplex.basis_coefficients, np.array([[0], [0], [0]]))
+
+    def test_initializing_basis_marks_slack_variables_as_basis(self):
+        simplex = Simplex()
+        simplex.constraints = np.array([[4],
+                                        [2],
+                                        [1]])
+
+        simplex.initialize_basis()
+
+        assert Variable(index=2, is_slack=True) in simplex.basis_variables
 
     def test_can_make_tableau_from_constraints(self):
         # coefficients = np.array([[]])

@@ -4,6 +4,7 @@ Given a standard LPP, finds the optimal solution through simplex method.
 """
 
 import numpy as np
+from variable import Variable
 
 class Simplex:
     """Class to preform simplex."""
@@ -17,6 +18,7 @@ class Simplex:
         self.solution = np.array([[]])
         self.reduced_cost = np.array([[]])
         self.least_positive_ratio = np.array([[]])
+        self.basis_variables = []
 
     def initialize_slack(self):
         """Adds the slack identity matrix to the A matrix."""
@@ -27,3 +29,7 @@ class Simplex:
         """Sets up the initial basis."""
         self.basis_solution = self.constraints
         self.basis_coefficients = np.zeros(self.constraints.shape)
+        self.basis_value = 0
+        self.basis_variables = []
+        for index in range(self.constraints.shape[0]):
+            self.basis_variables.append(Variable(index=index, is_slack=True))
