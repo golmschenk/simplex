@@ -9,17 +9,17 @@ from variable import Variable
 class Simplex:
     """Class to preform simplex."""
     def __init__(self):
-        self.coefficients = np.array([[]])
-        self.constraints = np.array([[]])
-        self.basis_objective = np.array([[]])
-        self.basis_solution = np.array([[]])
+        self.coefficients = np.array([[]], dtype='float')
+        self.constraints = np.array([[]], dtype='float')
+        self.basis_objective = np.array([[]], dtype='float')
+        self.basis_solution = np.array([[]], dtype='float')
         self.basis_value = 0
         self.value = 0
-        self.solution = np.array([[]])
-        self.reduced_costs = np.array([[]])
-        self.least_positive_ratio = np.array([[]])
+        self.solution = np.array([[]], dtype='float')
+        self.reduced_costs = np.array([[]], dtype='float')
+        self.least_positive_ratio = np.array([[]], dtype='float')
         self.basis_variables = []
-        self.objective = np.array([[]])
+        self.objective = np.array([[]], dtype='float')
         self.basis_size = 0
         self.pivot_column_index = None
         self.pivot_row_index = None
@@ -28,13 +28,13 @@ class Simplex:
         """Adds the slack identity matrix to the A matrix."""
         basis_size = self.coefficients.shape[0]
         self.coefficients = np.append(self.coefficients, np.identity(basis_size), axis=1)
-        self.objective = np.append(self.objective, np.zeros((basis_size)))
+        self.objective = np.append(self.objective, np.zeros((basis_size), dtype='float'))
 
     def initialize_basis(self):
         """Sets up the initial basis."""
         self.basis_size = self.constraints.shape[0]
         self.basis_solution = self.constraints
-        self.basis_objective = np.zeros(self.constraints.shape)
+        self.basis_objective = np.zeros(self.constraints.shape, dtype='float')
         self.basis_value = 0
         self.basis_variables = []
         for index in range(self.constraints.shape[0]):
