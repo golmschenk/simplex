@@ -46,11 +46,18 @@ class Display:
         self.clear_colors()
 
     def clear_colors(self):
+        co = []
+        for _ in range(self.simplex.basis_size):
+            co.append([""] * self.number_of_variables)
         self.color_dict = {
             "objective": [""] * self.number_of_variables,
+            "cb": [""] * self.simplex.basis_size,
+            "xb": [""] * self.simplex.basis_size,
+            "bv": [""] * self.simplex.basis_size,
             "variables": [""] * self.number_of_variables,
-            "coefficients": [[""] * self.number_of_variables] * self.simplex.basis_size,
+            "coefficients": co,
             "reduced": [""] * self.number_of_variables,
+            "ratio": [""] * self.simplex.basis_size,
             "value": ""
         }
 
@@ -64,6 +71,7 @@ class Display:
             self.color_dict['value'] = star
             self.display_tableau()
             self.simplex.calculate_reduced_costs()
+            self.color_dict['reduced'] = [star for _ in self.color_dict['reduced']]
             self.display_tableau()
             # End if the solution is optimal or unbounded.
             if self.simplex.check_if_optimal():
@@ -75,11 +83,21 @@ class Display:
                 return
             # Determine the pivot.
             self.simplex.obtain_pivot_column_index()
+            self.color_dict['reduced'][self.simplex.pivot_column_index] = star
             self.simplex.obtain_pivot_row_index()
+            self.color_dict['ratio'][self.simplex.pivot_row_index] = star
+            self.color_dict['coefficients'][self.simplex.pivot_row_index][self.simplex.pivot_column_index] = star
+            self.display_tableau()
             # Perform pivot.
             self.simplex.make_pivot_element_one()
             self.simplex.make_pivot_independent()
+            self.color_dict['coefficients'][self.simplex.pivot_row_index][self.simplex.pivot_column_index] = star
+            self.display_tableau()
             self.simplex.swap_basis_variable()
+            self.color_dict['bv'][self.simplex.pivot_row_index] = star
+            self.color_dict['cb'][self.simplex.pivot_row_index] = star
+            self.color_dict['variables'][self.simplex.pivot_column_index] = star
+            self.color_dict['objective'][self.simplex.pivot_column_index] = star
 
     def display_tableau(self):
         """Show only the tableau."""
@@ -101,19 +119,21 @@ class Display:
         # Setup the objective row.
         objective_row = r"\cline{4-" + str(number_of_columns - 1) + r"} \multicolumn{2}{c}{} & $c_j$"
         for index in range(number_of_variables):
-            objective_row += r" & " + dn(self.simplex.objective[index]) + r""
+            objective_row += r" & " + c['objective'][index] + dn(self.simplex.objective[index]) + r""
         objective_row += r" & \multicolumn{1}{r}{} \\ \cline{2-" + str(number_of_columns) + r"}"
 
         # Setup variable name row.
-        variable_name_row = r"\multicolumn{1}{c|}{} & $c_b$ & $x_b$"
+        variable_name_row = r"\multicolumn{1}{c|}{} & $c_b$ & $x_b$ "
         for index in range(number_of_variables):
+            variable_name_row += r" & " + c['variables'][index]
             if index >= number_of_basis_variables:
-                variable_name_row += r" & $s_" + str(index - number_of_basis_variables + 1) + r"$"
+                variable_name_row += r" $s_" + str(index - number_of_basis_variables + 1) + r"$"
             else:
-                variable_name_row += r" & $x_" + str(index + 1) + r"$"
+                variable_name_row += r" $x_" + str(index + 1) + r"$"
         variable_name_row += r" & $\frac{x_b}{x_i}$ \\ \hline "
 
         # Setup main rows.
+
         main_rows = []
         for basis_index in range(self.simplex.basis_size):
             row = r""
@@ -125,14 +145,16 @@ class Display:
                 ratio = self.simplex.least_positive_ratio[basis_index]
             except IndexError:
                 ratio = None
+            row += r" " + c['bv'][basis_index] + r" "
             if variable.is_slack:
                 row += r"$s_"
             else:
                 row += r"$x_"
-            row += str(variable.number + 1) + r"$ & " + dn(objective) + r" & " + dn(solution)
-            for coefficient in coefficients:
-                row += r" & " + dn(coefficient)
-            row += r" & " + (dn(ratio) if isinstance(ratio, Number) else r"") + r" \\ "
+            row += str(variable.number + 1) + r"$ & "
+            row += r" " + c['cb'][basis_index] + r" " + dn(objective) + r" & " + dn(solution)
+            for i, coefficient in enumerate(coefficients):
+                row += r" & " + c['coefficients'][basis_index][i] + dn(coefficient)
+            row += r" & " + (c['ratio'][basis_index] + dn(ratio) if isinstance(ratio, Number) else r"") + r" \\ "
             main_rows.append(row)
         main_rows[-1] += "\hline "
 
@@ -147,7 +169,7 @@ class Display:
                 reduced_cost = self.simplex.reduced_costs[index]
             except IndexError:
                 reduced_cost = None
-            reduced_cost_row += r" & " + (dn(reduced_cost) if isinstance(reduced_cost, Number) else r"") + r""
+            reduced_cost_row += r" & " + (c['reduced'][index] + dn(reduced_cost) if isinstance(reduced_cost, Number) else r"") + r""
         reduced_cost_row += r" & \multicolumn{1}{| c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
 
         latex = r"""{\renewcommand{\arraystretch}{1.2}"""
