@@ -30,6 +30,10 @@ class Display:
     def __init__(self):
         self.simplex = Simplex()
         self.figure = plt.figure(figsize=(18, 9), dpi=80)
+        plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
+        ax = plt.gca()
+        ax.axes.get_xaxis().set_visible(False)
+        ax.axes.get_yaxis().set_visible(False)
         self.text = plt.text(0, 0, '', fontsize=40)
         self.initial_draw_done = False
 
@@ -129,7 +133,7 @@ class Display:
         reduced_cost_row += r" & \multicolumn{1}{| c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
 
         latex = r"""{\renewcommand{\arraystretch}{1.2}"""
-        latex += r"""\begin{tabularx}{1000pt}{""" + column_settings + r"""}""" + objective_row
+        latex += r"""\begin{tabularx}{1100pt}{""" + column_settings + r"""}""" + objective_row
         latex += variable_name_row
         for row in main_rows:
             latex += row
