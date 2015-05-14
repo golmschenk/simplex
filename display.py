@@ -31,7 +31,7 @@ def dn(number):
 class Display:
     def __init__(self, simplex_init=Simplex()):
         self.simplex = simplex_init
-        simplex.initialize_tableau()
+        self.simplex.initialize_tableau()
         self.number_of_variables = self.simplex.coefficients.shape[1]
         self.number_of_columns = self.number_of_variables + 4
         self.number_of_basis_variables = self.simplex.basis_size
@@ -164,8 +164,8 @@ class Display:
 
         # Setup reduced cost row.
         reduced_cost_row = r"\multicolumn{1}{c}{"
-        reduced_cost_row += ((c['value'] + r"$c_b x_b = $" + dn(simplex.basis_value))
-                             if isinstance(simplex.basis_value, Number) else r"")
+        reduced_cost_row += ((c['value'] + r"$c_b x_b = $" + dn(self.simplex.basis_value))
+                             if isinstance(self.simplex.basis_value, Number) else r"")
         reduced_cost_row += r"} & & "
         reduced_cost_row += r"$\bar{c_j}$"
         for index in range(number_of_variables):
@@ -209,6 +209,15 @@ class Display:
             optimal_latex += r"$x_" + str(i + 1) + r" = \,$" + dn(s[0])
         optimal_latex += r" \\"
         self.text.set_text(optimal_latex + tableau_latex)
+        plt.waitforbuttonpress()
+        plt.draw()
+        plt.waitforbuttonpress()
+
+    def display_unbounded(self):
+        tableau_latex = self.attain_tableau_latex()
+        unbounded_latex = r"""\noindent Unbounded!"""
+        unbounded_latex += r" \\"
+        self.text.set_text(unbounded_latex + tableau_latex)
         plt.waitforbuttonpress()
         plt.draw()
         plt.waitforbuttonpress()
