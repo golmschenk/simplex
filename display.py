@@ -67,11 +67,9 @@ class Display:
         """Run simplex with display."""
         # Display the starting tableau.
         self.display_tableau()
+        self.simplex.calculate_basis_value()
         while True:
-            # Calculate the value and reduced costs.
-            self.simplex.calculate_basis_value()
-            self.color_dict['value'] = star
-            self.display_tableau()
+            # Calculate reduced costs.
             self.simplex.calculate_reduced_costs()
             self.color_dict['reduced'] = [star for _ in self.color_dict['reduced']]
             self.display_tableau()
@@ -106,6 +104,9 @@ class Display:
             self.color_dict['cb'][self.simplex.pivot_row_index] = star
             self.color_dict['variables'][self.simplex.pivot_column_index] = star
             self.color_dict['objective'][self.simplex.pivot_column_index] = star
+            self.simplex.calculate_basis_value()
+            self.color_dict['value'] = star
+            self.display_tableau()
 
     def display_tableau(self):
         """Show only the tableau."""
