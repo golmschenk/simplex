@@ -14,6 +14,7 @@ custom_preamble = {
 }
 mpl.rcParams.update(custom_preamble)
 
+blue = r" \cellcolor{blue!25} "
 star = r" $\star$ "
 
 def number_to_latex_display_string(number):
@@ -46,6 +47,7 @@ class Display:
         self.initial_draw_done = False
         self.color_dict = {}
         self.clear_colors()
+        self.fig_count = 0
 
     def clear_colors(self):
         co = []
@@ -179,7 +181,7 @@ class Display:
             except IndexError:
                 reduced_cost = None
             reduced_cost_row += r" & " + (c['reduced'][index] + dn(reduced_cost) if isinstance(reduced_cost, Number) else r"") + r""
-        reduced_cost_row += r" & \multicolumn{1}{| c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
+        reduced_cost_row += r" & \multicolumn{1}{c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
 
         latex = r"""{\renewcommand{\arraystretch}{1.2}"""
         latex += r"""\begin{tabularx}{1100pt}{""" + column_settings + r"""}""" + objective_row
@@ -192,6 +194,11 @@ class Display:
         latex.replace('\n', '')
 
         return latex
+
+    def save_fig(self):
+        number = str(self.fig_count).zfill(3)
+        plt.savefig('out' + number + ".svg")
+        self.fig_count += 1
 
     def display_latex(self, latex):
         self.text.set_text(latex)
