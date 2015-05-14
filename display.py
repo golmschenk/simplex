@@ -58,7 +58,7 @@ class Display:
         # Setup the objective row.
         objective_row = r"\multicolumn{2}{c}{} & $c_i$"
         for index in range(number_of_variables):
-            objective_row += r" & $" + str(self.simplex.objective[index]) + r"$"
+            objective_row += r" & " + str(self.simplex.objective[index]) + r""
         objective_row += r" & \multicolumn{1}{r}{} \\ \cline{2-" + str(number_of_columns) + r"}"
 
         # Setup variable name row.
@@ -68,10 +68,38 @@ class Display:
                 variable_name_row += r" & $s_" + str(index - number_of_basis_variables + 1) + r"$"
             else:
                 variable_name_row += r" & $x_" + str(index + 1) + r"$"
-        variable_name_row += r" & $\frac{x_b}{x_j} \\ \hline$"
+        variable_name_row += r" & $\frac{x_b}{x_j}$ \\ \hline "
+
+        # Setup main rows.
+        main_rows = []
+        for basis_index in range(self.simplex.basis_size):
+            row = r""
+            variable = self.simplex.basis_variables[basis_index]
+            objective = self.simplex.basis_objective[basis_index][0]
+            solution = self.simplex.basis_solution[basis_index][0]
+            coefficients = self.simplex.coefficients[basis_index].flatten()
+            try:
+                ratio = self.simplex.least_positive_ratio[basis_index]
+            except IndexError:
+                ratio = None
+            if variable.is_slack:
+                row += r"$s_"
+            else:
+                row += r"$x_"
+            row += str(variable.number + 1) + r"$ & " + str(objective) + r" & " + str(solution)
+            for coefficient in coefficients:
+                row += r" & " + str(coefficient)
+            row += r" & " + (str(ratio) if ratio else r"") + r" \\"
+            main_rows.append(row)
+
+        # Setup reduced cost row.
+        reduced_cost_row = r"$c_b x_b = " + str(simplex.basis_solution)
+
 
         latex = r"""\begin{tabular}{""" + column_settings + r"""}""" + objective_row
         latex += variable_name_row
+        for row in main_rows:
+            latex += row
         latex += r"""\end{tabular}"""
         latex.replace('\n', '')
         return latex
@@ -82,9 +110,9 @@ class Display:
 
 if __name__ == "__main__":
     coefficients = np.array([[1,  1],
-                             [1, -1]])
+                             [1, -1]], dtype='float')
     constraints = np.array([[4],
-                            [2]])
+                            [2]], dtype='float')
     objective = np.array([3, 2])
     simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
     display = Display()
