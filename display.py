@@ -13,6 +13,7 @@ class Display:
     def __init__(self):
         self.simplex = Simplex()
         self.text = plt.text(0, 0, '', fontsize=40)
+        self.initial_draw_done = False
 
     def run_simplex(self):
         """Run simplex with display."""
@@ -121,8 +122,12 @@ class Display:
 
     def display_latex(self, latex):
         self.text.set_text(latex)
-        plt.draw()
-        plt.waitforbuttonpress()
+        if self.initial_draw_done:
+            plt.waitforbuttonpress()
+            plt.draw()
+        else:
+            self.initial_draw_done = True
+            plt.show(block=False)
 
 if __name__ == "__main__":
     coefficients = np.array([[1,  1],
