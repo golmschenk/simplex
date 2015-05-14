@@ -1,6 +1,7 @@
 """The display for the simplex running."""
 from simplex import Simplex
 
+from numbers import Number
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
@@ -8,21 +9,22 @@ import numpy as np
 # Use latex.
 mpl.rc('text', usetex=True)
 
-
 class Display:
     def __init__(self):
         self.simplex = Simplex()
+        self.text = plt.text(0, 0, '', fontsize=40)
 
     def run_simplex(self):
         """Run simplex with display."""
         # Set up the tableau.
         self.simplex.initialize_tableau()
         # Display the starting tableau.
-        self.simplex.display_tableau()
+        self.display_tableau()
         while True:
             # Calculate the value and reduced costs.
             self.simplex.calculate_basis_value()
             self.simplex.calculate_reduced_costs()
+            self.display_tableau()
             # End if the solution is optimal or unbounded.
             if self.simplex.check_if_optimal():
                 self.simplex.value = self.simplex.basis_value
@@ -89,13 +91,14 @@ class Display:
             row += str(variable.number + 1) + r"$ & " + str(objective) + r" & " + str(solution)
             for coefficient in coefficients:
                 row += r" & " + str(coefficient)
-            row += r" & " + (str(ratio) if ratio else r"") + r" \\ "
+            row += r" & " + (str(ratio) if isinstance(ratio, Number) else r"") + r" \\ "
             main_rows.append(row)
         main_rows[-1] += "\hline "
 
         # Setup reduced cost row.
         reduced_cost_row = r"\multicolumn{1}{c}{"
-        reduced_cost_row += ((r"$c_b x_b = " + str(simplex.basis_value) + r"$") if simplex.basis_value else r"")
+        reduced_cost_row += ((r"$c_b x_b = " + str(simplex.basis_value) + r"$")
+                             if isinstance(simplex.basis_value, Number) else r"")
         reduced_cost_row += r"} & & "
         reduced_cost_row += r"$\bar{c_j}$"
         for index in range(number_of_variables):
@@ -103,7 +106,7 @@ class Display:
                 reduced_cost = self.simplex.reduced_costs[index]
             except IndexError:
                 reduced_cost = None
-            reduced_cost_row += r" & " + (str(reduced_cost) if reduced_cost else r"") + r""
+            reduced_cost_row += r" & " + (str(reduced_cost) if isinstance(reduced_cost, Number) else r"") + r""
         reduced_cost_row += r" & \multicolumn{1}{| c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
 
 
@@ -117,8 +120,9 @@ class Display:
         return latex
 
     def display_latex(self, latex):
-        plt.text(0, 0,'%s' % latex, fontsize=40)
-        plt.show()
+        self.text.set_text(latex)
+        plt.draw()
+        plt.waitforbuttonpress()
 
 if __name__ == "__main__":
     coefficients = np.array([[1,  1],
@@ -129,5 +133,4 @@ if __name__ == "__main__":
     simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
     display = Display()
     display.simplex = simplex
-    display.simplex.initialize_tableau()
-    display.display_tableau()
+    display.run_simplex()
