@@ -10,9 +10,11 @@ import numpy as np
 # Use latex.
 mpl.rc('text', usetex=True)
 custom_preamble = {
-    "text.latex.preamble": ["\\usepackage{tabularx}"]
+    "text.latex.preamble": ["\\usepackage{tabularx, colortbl, xcolor, color}"]
 }
 mpl.rcParams.update(custom_preamble)
+
+star = r" $\star$ "
 
 def number_to_latex_display_string(number):
     fraction = Fraction(number)
@@ -40,13 +42,17 @@ class Display:
         ax.axes.get_yaxis().set_visible(False)
         self.text = plt.text(0, 0, '', fontsize=40)
         self.initial_draw_done = False
-        self.color_dict = {
-            "objective": [""] * self.number_of_columns,
-            "variables": [""] * self.number_of_columns,
-            "main": [[""] * self.number_of_columns] * self.simplex.basis_size,
-            "reduced": [""] * self.number_of_columns
-        }
+        self.color_dict = {}
+        self.clear_colors()
 
+    def clear_colors(self):
+        self.color_dict = {
+            "objective": [""] * self.number_of_variables,
+            "variables": [""] * self.number_of_variables,
+            "coefficients": [[""] * self.number_of_variables] * self.simplex.basis_size,
+            "reduced": [""] * self.number_of_variables,
+            "value": ""
+        }
 
     def run_simplex(self):
         """Run simplex with display."""
@@ -55,6 +61,8 @@ class Display:
         while True:
             # Calculate the value and reduced costs.
             self.simplex.calculate_basis_value()
+            self.color_dict['value'] = star
+            self.display_tableau()
             self.simplex.calculate_reduced_costs()
             self.display_tableau()
             # End if the solution is optimal or unbounded.
@@ -130,7 +138,7 @@ class Display:
 
         # Setup reduced cost row.
         reduced_cost_row = r"\multicolumn{1}{c}{"
-        reduced_cost_row += ((r"$c_b x_b = $" + dn(simplex.basis_value))
+        reduced_cost_row += ((c['value'] + r"$c_b x_b = $" + dn(simplex.basis_value))
                              if isinstance(simplex.basis_value, Number) else r"")
         reduced_cost_row += r"} & & "
         reduced_cost_row += r"$\bar{c_j}$"
@@ -163,6 +171,7 @@ class Display:
         else:
             self.initial_draw_done = True
             plt.show(block=False)
+        self.clear_colors()
 
 if __name__ == "__main__":
     coefficients = np.array([[1,  1],
