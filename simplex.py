@@ -28,10 +28,12 @@ class Simplex:
         self.pivot_row_index = None
         self.is_optimal = False
         self.is_unbounded = False
+        self.number_of_variables = 0
 
     def initialize_slack(self):
         """Adds the slack identity matrix to the A matrix."""
         basis_size = self.coefficients.shape[0]
+        self.number_of_variables = self.coefficients.shape[1]
         self.coefficients = np.append(self.coefficients, np.identity(basis_size), axis=1)
         self.objective = np.append(self.objective, np.zeros((basis_size), dtype='float'))
 

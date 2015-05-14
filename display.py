@@ -75,16 +75,20 @@ class Display:
             self.display_tableau()
             # End if the solution is optimal or unbounded.
             if self.simplex.check_if_optimal():
-                self.simplex.value = self.simplex.basis_value
                 self.simplex.obtain_solution()
+                self.simplex.value = np.inner(self.simplex.objective[0:self.simplex.number_of_variables],
+                                              self.simplex.solution.flatten())
+                self.display_optimal()
                 return
             if self.simplex.check_if_unbounded():
                 self.simplex.value = float('inf')
                 return
             # Determine the pivot.
             self.simplex.obtain_pivot_column_index()
-            self.color_dict['reduced'][self.simplex.pivot_column_index] = star
             self.simplex.obtain_pivot_row_index()
+            self.color_dict['ratio'] = [star for _ in self.color_dict['ratio']]
+            self.display_tableau()
+            self.color_dict['reduced'][self.simplex.pivot_column_index] = star
             self.color_dict['ratio'][self.simplex.pivot_row_index] = star
             self.color_dict['coefficients'][self.simplex.pivot_row_index][self.simplex.pivot_column_index] = star
             self.display_tableau()
@@ -195,6 +199,20 @@ class Display:
             plt.show(block=False)
         self.clear_colors()
 
+    def display_optimal(self):
+        tableau_latex = self.attain_tableau_latex()
+        optimal_latex = r"""\noindent Optimal value: """ + dn(self.simplex.value) + r" \\ "
+        optimal_latex += r"""Solution: """
+        for i, s in enumerate(self.simplex.solution):
+            if i != 0:
+                optimal_latex += r", "
+            optimal_latex += r"$x_" + str(i + 1) + r" = \,$" + dn(s[0])
+        optimal_latex += r" \\"
+        self.text.set_text(optimal_latex + tableau_latex)
+        plt.waitforbuttonpress()
+        plt.draw()
+        plt.waitforbuttonpress()
+
 if __name__ == "__main__":
     coefficients = np.array([[1,  1],
                              [1, -1]], dtype='float')
@@ -204,4 +222,3 @@ if __name__ == "__main__":
     simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
     display = Display(simplex_init=simplex)
     display.run_simplex()
-    plt.waitforbuttonpress()
