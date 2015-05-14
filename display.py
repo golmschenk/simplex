@@ -56,7 +56,7 @@ class Display:
         column_settings += " | c |"
 
         # Setup the objective row.
-        objective_row = r"\multicolumn{2}{c}{} & $c_i$"
+        objective_row = r"\cline{4-" + str(number_of_columns - 1) + r"} \multicolumn{2}{c}{} & $c_j$"
         for index in range(number_of_variables):
             objective_row += r" & " + str(self.simplex.objective[index]) + r""
         objective_row += r" & \multicolumn{1}{r}{} \\ \cline{2-" + str(number_of_columns) + r"}"
@@ -68,7 +68,7 @@ class Display:
                 variable_name_row += r" & $s_" + str(index - number_of_basis_variables + 1) + r"$"
             else:
                 variable_name_row += r" & $x_" + str(index + 1) + r"$"
-        variable_name_row += r" & $\frac{x_b}{x_j}$ \\ \hline "
+        variable_name_row += r" & $\frac{x_b}{x_i}$ \\ \hline "
 
         # Setup main rows.
         main_rows = []
@@ -89,17 +89,29 @@ class Display:
             row += str(variable.number + 1) + r"$ & " + str(objective) + r" & " + str(solution)
             for coefficient in coefficients:
                 row += r" & " + str(coefficient)
-            row += r" & " + (str(ratio) if ratio else r"") + r" \\"
+            row += r" & " + (str(ratio) if ratio else r"") + r" \\ "
             main_rows.append(row)
+        main_rows[-1] += "\hline "
 
         # Setup reduced cost row.
-        reduced_cost_row = r"$c_b x_b = " + str(simplex.basis_solution)
+        reduced_cost_row = r"\multicolumn{1}{c}{"
+        reduced_cost_row += ((r"$c_b x_b = " + str(simplex.basis_value) + r"$") if simplex.basis_value else r"")
+        reduced_cost_row += r"} & & "
+        reduced_cost_row += r"$\bar{c_j}$"
+        for index in range(number_of_variables):
+            try:
+                reduced_cost = self.simplex.reduced_costs[index]
+            except IndexError:
+                reduced_cost = None
+            reduced_cost_row += r" & " + (str(reduced_cost) if reduced_cost else r"") + r""
+        reduced_cost_row += r" & \multicolumn{1}{| c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
 
 
         latex = r"""\begin{tabular}{""" + column_settings + r"""}""" + objective_row
         latex += variable_name_row
         for row in main_rows:
             latex += row
+        latex += reduced_cost_row
         latex += r"""\end{tabular}"""
         latex.replace('\n', '')
         return latex
