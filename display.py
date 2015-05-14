@@ -27,8 +27,12 @@ def dn(number):
     return number_to_latex_display_string(number)
 
 class Display:
-    def __init__(self):
-        self.simplex = Simplex()
+    def __init__(self, simplex_init=Simplex()):
+        self.simplex = simplex_init
+        simplex.initialize_tableau()
+        self.number_of_variables = self.simplex.coefficients.shape[1]
+        self.number_of_columns = self.number_of_variables + 4
+        self.number_of_basis_variables = self.simplex.basis_size
         self.figure = plt.figure(figsize=(18, 9), dpi=80)
         plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
         ax = plt.gca()
@@ -36,11 +40,16 @@ class Display:
         ax.axes.get_yaxis().set_visible(False)
         self.text = plt.text(0, 0, '', fontsize=40)
         self.initial_draw_done = False
+        self.color_dict = {
+            "objective": [""] * self.number_of_columns,
+            "variables": [""] * self.number_of_columns,
+            "main": [[""] * self.number_of_columns] * self.simplex.basis_size,
+            "reduced": [""] * self.number_of_columns
+        }
+
 
     def run_simplex(self):
         """Run simplex with display."""
-        # Set up the tableau.
-        self.simplex.initialize_tableau()
         # Display the starting tableau.
         self.display_tableau()
         while True:
@@ -70,9 +79,10 @@ class Display:
         self.display_latex(latex)
 
     def attain_tableau_latex(self):
-        number_of_variables = self.simplex.coefficients.shape[1]
-        number_of_columns = number_of_variables + 4
-        number_of_basis_variables = self.simplex.basis_size
+        number_of_variables = self.number_of_variables
+        number_of_columns = self.number_of_columns
+        number_of_basis_variables = self.number_of_basis_variables
+        c = self.color_dict
 
         # Get the column settings.
         column_settings = "| X | X X |"
@@ -161,7 +171,6 @@ if __name__ == "__main__":
                             [2]], dtype='float')
     objective = np.array([3, 2])
     simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
-    display = Display()
-    display.simplex = simplex
+    display = Display(simplex_init=simplex)
     display.run_simplex()
     plt.waitforbuttonpress()
