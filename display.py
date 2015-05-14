@@ -84,6 +84,7 @@ class Display:
                 return
             if self.simplex.check_if_unbounded():
                 self.simplex.value = float('inf')
+                self.display_unbounded()
                 return
             # Determine the pivot.
             self.simplex.obtain_pivot_column_index()
