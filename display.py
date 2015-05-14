@@ -2,6 +2,7 @@
 from simplex import Simplex
 
 from numbers import Number
+from fractions import Fraction
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
@@ -12,6 +13,18 @@ custom_preamble = {
     "text.latex.preamble": ["\\usepackage{tabularx}"]
 }
 mpl.rcParams.update(custom_preamble)
+
+def number_to_latex_display_string(number):
+    fraction = Fraction(number)
+    if fraction.denominator == 1:
+        return r"$" + str(fraction.numerator) + r"$"
+    elif fraction.denominator == 0:
+        return r"$\infty$"
+    else:
+        return r"$\frac{" + str(fraction.numerator) + r"}{" + str(fraction.denominator) + r"}$"
+
+def dn(number):
+    return number_to_latex_display_string(number)
 
 class Display:
     def __init__(self):
@@ -66,7 +79,7 @@ class Display:
         # Setup the objective row.
         objective_row = r"\cline{4-" + str(number_of_columns - 1) + r"} \multicolumn{2}{c}{} & $c_j$"
         for index in range(number_of_variables):
-            objective_row += r" & " + str(self.simplex.objective[index]) + r""
+            objective_row += r" & " + dn(self.simplex.objective[index]) + r""
         objective_row += r" & \multicolumn{1}{r}{} \\ \cline{2-" + str(number_of_columns) + r"}"
 
         # Setup variable name row.
@@ -94,16 +107,16 @@ class Display:
                 row += r"$s_"
             else:
                 row += r"$x_"
-            row += str(variable.number + 1) + r"$ & " + str(objective) + r" & " + str(solution)
+            row += str(variable.number + 1) + r"$ & " + dn(objective) + r" & " + dn(solution)
             for coefficient in coefficients:
-                row += r" & " + str(coefficient)
-            row += r" & " + (str(ratio) if isinstance(ratio, Number) else r"") + r" \\ "
+                row += r" & " + dn(coefficient)
+            row += r" & " + (dn(ratio) if isinstance(ratio, Number) else r"") + r" \\ "
             main_rows.append(row)
         main_rows[-1] += "\hline "
 
         # Setup reduced cost row.
         reduced_cost_row = r"\multicolumn{1}{c}{"
-        reduced_cost_row += ((r"$c_b x_b = " + str(simplex.basis_value) + r"$")
+        reduced_cost_row += ((r"$c_b x_b = $" + dn(simplex.basis_value))
                              if isinstance(simplex.basis_value, Number) else r"")
         reduced_cost_row += r"} & & "
         reduced_cost_row += r"$\bar{c_j}$"
@@ -112,15 +125,17 @@ class Display:
                 reduced_cost = self.simplex.reduced_costs[index]
             except IndexError:
                 reduced_cost = None
-            reduced_cost_row += r" & " + (str(reduced_cost) if isinstance(reduced_cost, Number) else r"") + r""
+            reduced_cost_row += r" & " + (dn(reduced_cost) if isinstance(reduced_cost, Number) else r"") + r""
         reduced_cost_row += r" & \multicolumn{1}{| c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
 
-        latex = r"""\begin{tabularx}{1000pt}{""" + column_settings + r"""}""" + objective_row
+        latex = r"""{\renewcommand{\arraystretch}{1.2}"""
+        latex += r"""\begin{tabularx}{1000pt}{""" + column_settings + r"""}""" + objective_row
         latex += variable_name_row
         for row in main_rows:
             latex += row
         latex += reduced_cost_row
         latex += r"""\end{tabularx}"""
+        latex += r"""}"""
         latex.replace('\n', '')
 
         return latex
@@ -145,3 +160,4 @@ if __name__ == "__main__":
     display = Display()
     display.simplex = simplex
     display.run_simplex()
+    plt.waitforbuttonpress()
