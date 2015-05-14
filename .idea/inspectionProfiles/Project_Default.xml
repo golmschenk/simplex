@@ -15,6 +15,13 @@
     </inspection_tool>
     <inspection_tool class="PyUnresolvedReferencesInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <scope name="Tests" level="WARNING" enabled="false" />
+      <option name="ignoredIdentifiers">
+        <list>
+          <option value="main.A" />
+          <option value="main.b" />
+          <option value="main.c" />
+        </list>
+      </option>
     </inspection_tool>
     <inspection_tool class="PyUnusedLocalInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true">
       <scope name="Tests" level="WEAK WARNING" enabled="false">

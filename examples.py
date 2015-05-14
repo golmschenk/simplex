@@ -44,5 +44,3 @@ def example4():
     simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
     display = Display(simplex_init=simplex)
     display.run_simplex()
-
-example4()
