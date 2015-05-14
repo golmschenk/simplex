@@ -8,10 +8,15 @@ import numpy as np
 
 # Use latex.
 mpl.rc('text', usetex=True)
+custom_preamble = {
+    "text.latex.preamble": ["\\usepackage{tabularx}"]
+}
+mpl.rcParams.update(custom_preamble)
 
 class Display:
     def __init__(self):
         self.simplex = Simplex()
+        self.figure = plt.figure(figsize=(18, 9), dpi=80)
         self.text = plt.text(0, 0, '', fontsize=40)
         self.initial_draw_done = False
 
@@ -53,10 +58,10 @@ class Display:
         number_of_basis_variables = self.simplex.basis_size
 
         # Get the column settings.
-        column_settings = "| c | c c |"
+        column_settings = "| X | X X |"
         for _ in range(number_of_variables):
-            column_settings += " c"
-        column_settings += " | c |"
+            column_settings += " X"
+        column_settings += " | X |"
 
         # Setup the objective row.
         objective_row = r"\cline{4-" + str(number_of_columns - 1) + r"} \multicolumn{2}{c}{} & $c_j$"
@@ -110,20 +115,21 @@ class Display:
             reduced_cost_row += r" & " + (str(reduced_cost) if isinstance(reduced_cost, Number) else r"") + r""
         reduced_cost_row += r" & \multicolumn{1}{| c}{} \\ \cline{4-" + str(number_of_columns - 1) + r"}"
 
-
-        latex = r"""\begin{tabular}{""" + column_settings + r"""}""" + objective_row
+        latex = r"""\begin{tabularx}{1000pt}{""" + column_settings + r"""}""" + objective_row
         latex += variable_name_row
         for row in main_rows:
             latex += row
         latex += reduced_cost_row
-        latex += r"""\end{tabular}"""
+        latex += r"""\end{tabularx}"""
         latex.replace('\n', '')
+
         return latex
 
     def display_latex(self, latex):
         self.text.set_text(latex)
         if self.initial_draw_done:
-            plt.waitforbuttonpress()
+            while not plt.waitforbuttonpress():
+                pass
             plt.draw()
         else:
             self.initial_draw_done = True
