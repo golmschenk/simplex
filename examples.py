@@ -13,4 +13,26 @@ def example1():
     display = Display(simplex_init=simplex)
     display.run_simplex()
 
-example1()
+def example2():
+    coefficients = np.array([[4.1, 2],
+                             [2, 4]], dtype='float')
+    constraints = np.array([[40],
+                            [32]], dtype='float')
+    objective = np.array([80, 55])
+    simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
+    display = Display(simplex_init=simplex)
+    display.run_simplex()
+
+def example3():
+    coefficients = np.array([[2, 1,  0],
+                             [1, 2, -2],
+                             [0, 1,  2]], dtype='float')
+    constraints = np.array([[10],
+                            [20],
+                            [ 5]], dtype='float')
+    objective = np.array([2, -1, 2])
+    simplex = Simplex(coefficients=coefficients, constraints=constraints, objective=objective)
+    display = Display(simplex_init=simplex)
+    display.run_simplex()
+
+example3()

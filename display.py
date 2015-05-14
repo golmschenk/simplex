@@ -17,7 +17,9 @@ mpl.rcParams.update(custom_preamble)
 star = r" $\star$ "
 
 def number_to_latex_display_string(number):
-    fraction = Fraction(number)
+    if abs(number) == float('inf'):
+        return r"$\infty$"
+    fraction = Fraction(number).limit_denominator(10000)
     if fraction.denominator == 1:
         return r"$" + str(fraction.numerator) + r"$"
     elif fraction.denominator == 0:
@@ -86,6 +88,7 @@ class Display:
             # Determine the pivot.
             self.simplex.obtain_pivot_column_index()
             self.simplex.obtain_pivot_row_index()
+            self.color_dict['reduced'][self.simplex.pivot_column_index] = star
             self.color_dict['ratio'] = [star for _ in self.color_dict['ratio']]
             self.display_tableau()
             self.color_dict['reduced'][self.simplex.pivot_column_index] = star
